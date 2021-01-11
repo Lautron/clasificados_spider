@@ -36,7 +36,8 @@ class ClasificadosSpider(scrapy.Spider):
             warranty = ''
 
         yield {
-            'title': response.css('h1.h2.m0.mb0.bolder.line-height-1::text').get(),
+            #'title': response.css('h1.h2.m0.mb0.bolder.line-height-1::text').get(),
+            'url': response.url,
             'price': response.css('div.h2.mt0.main.bolder::text').get(),
             'direction': ' '.join([data.get().strip() for data in town])[11:].strip(),
             'seller': seller.strip() if seller else '',
