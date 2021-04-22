@@ -7,7 +7,7 @@ class ClasificadosSpider(scrapy.Spider):
     start_urls = ['https://clasificados.lavoz.com.ar/inmuebles/todo/?cantidad-de-dormitorios[0]=3-dormitorios&operacion=alquileres&provincia=cordoba&ciudad=cordoba&precio-hasta=30000&moneda=pesos']
     present_urls = { 
         data[1] for data in csv.reader(
-            open('/home/lautarob/Documents/code/web-scraping/cordoba/clasificados_spider/miguel.csv', 'r')
+            open('/home/lautarob/Documents/code/web-scraping/cordoba/cordoba_deptos/miguel.csv', 'r')
             ) 
         }
 
