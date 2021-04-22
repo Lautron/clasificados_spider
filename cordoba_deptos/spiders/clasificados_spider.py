@@ -4,11 +4,14 @@ import scrapy, re
 class ClasificadosSpider(scrapy.Spider):
     name = 'clasificados'
     download_delay = 1
-    start_urls = ['https://clasificados.lavoz.com.ar/inmuebles/todo/?cantidad-de-dormitorios[0]=3-dormitorios&operacion=alquileres&provincia=cordoba&ciudad=cordoba&precio-hasta=30000&moneda=pesos']
+    start_urls = ['https://clasificados.lavoz.com.ar/inmuebles/todo/?cantidad-de-dormitorios[0]=2-dormitorios&operacion=alquileres&provincia=cordoba&ciudad=cordoba&precio-hasta=18000&moneda=pesos']
 
     def parse(self, response):
         product_links = response.css('div.col.col-12.mx1.md-mx0.md-mr1.bg-white.mb2.line-height-3.card.relative.safari-card a::attr(href)')
-        yield from response.follow_all(product_links, self.parse_product)
+        for item in product_links:
+            if 'avisos' in item.get():
+                yield response.follow(item, self.parse_product)
+        #yield from response.follow_all(product_links, self.parse_product)
 
         #self.scraped_pages = 0
         #if self.scraped_pages <= 5:
@@ -38,11 +41,10 @@ class ClasificadosSpider(scrapy.Spider):
         yield {
             #'title': response.css('h1.h2.m0.mb0.bolder.line-height-1::text').get(),
             'url': response.url,
-            'price': response.css('div.h2.mt0.main.bolder::text').get(),
+            'price': response.css('div.h2.mt0.main.bolder > div::text').get(),
             'direction': ' '.join([data.get().strip() for data in town])[11:].strip(),
             'seller': seller.strip() if seller else '',
             'expenses': expenses if expenses else '',
             'warranty': warranty if warranty else '',
         }
-
 
