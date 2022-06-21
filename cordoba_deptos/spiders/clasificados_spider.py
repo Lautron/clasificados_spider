@@ -1,14 +1,40 @@
 import scrapy, re
+from user_config import bot_config 
+from validate_user_config import assert_valid_data
 
-def get_urls():
-    url = 'https://clasificados.lavoz.com.ar/inmuebles/todo?cantidad-de-dormitorios[0]=1-dormitorio&operacion=alquileres&zona=centro&precio-hasta=20000&moneda=pesos&provincia=cordoba&ciudad=cordoba&barrio={}'
-    barrios = ['nueva-cordoba','centro','jardin','guemes']
-    return [url.format(barrio) for barrio in barrios]
+def build_urls(config):
+    assert_valid_data(config)
+    result = []
+
+    url_parts = {
+        "operation": 'operacion={}',
+        "min_price": 'precio-desde={}',
+        "max_price": 'precio-hasta={}',
+        "currency": 'moneda={}',
+        "province": 'provincia={}',
+        "city": 'ciudad={}',
+        "bedrooms": 'cantidad-de-dormitorios[0]={}',
+        "neighborhoods": 'barrio={}',
+    }
+
+    build_option = lambda part, option: url_parts[part].format(option)
+    url, bedrooms, neighborhoods = [config.pop(config_key) for config_key in ['base_url', 'bedrooms', 'neighborhoods']]
+    normal_options = [build_option(part, option) for part, option in config.items()]
+    url += '?' + "&".join(normal_options)
+
+    for bedroom_quantity in bedrooms:
+        for neighborhood_name in neighborhoods:
+            bedroom_option = build_option('bedrooms', bedroom_quantity)
+            neighborhood_option = build_option('neighborhoods', neighborhood_name)
+            tmp_url = url + '&' + "&".join([bedroom_option, neighborhood_option])
+            result.append(tmp_url)
+
+    return result
 
 class ClasificadosSpider(scrapy.Spider):
     name = 'clasificados'
     download_delay = 1
-    start_urls = get_urls()
+    start_urls = build_urls(bot_config)
 
     def parse(self, response):
         product_links = response.css('div.col.col-12.mx1.md-mx0.md-mr1.bg-white.mb2.line-height-3.card.relative.safari-card a::attr(href)')
