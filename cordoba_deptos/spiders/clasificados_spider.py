@@ -56,7 +56,7 @@ class ClasificadosSpider(scrapy.Spider):
         post_ended = response.css('#camera > div.absolute.fit.center.bg-darken-4.z1 > div > div')
         if post_ended:
             return None
-        description = '\n'.join([data.get().strip() for data in response.css('div.container.px1.md-px0.h4 *::text')]).lower()
+        description = '\n'.join([data.get().strip() for data in response.css('div.col.col-12.px1.md-px0.h4 *::text')]).lower()
         town = response.css('div.col.col-12.md-pt2 *::text') 
         seller = response.css('div.col.col-8.pt1 h4.m0::text').get()
         expenses = response.css('h3.h4.mt0.main.bolder::text').get()
@@ -75,7 +75,7 @@ class ClasificadosSpider(scrapy.Spider):
             #'title': response.css('h1.h2.m0.mb0.bolder.line-height-1::text').get(),
             'url': response.url,
             'price': response.css('div.h2.mt0.main.bolder::text').get(),
-            'direction': ' '.join([data.get().strip() for data in town])[11:].strip(),
+            'address': ' '.join([data.get().strip() for data in town])[11:].strip(),
             'seller': seller.strip() if seller else '',
             'expenses': expenses if expenses else '',
             'warranty': warranty if warranty else '',
