@@ -5,7 +5,7 @@ Scrapy spider made to scrape rental listings from **Clasificados La Voz** websit
 ## Installation
 1. Clone the repo
 2. Create virtual environment (optional)
-3. `pip install requirements.txt`
+3. `pip install -r requirements.txt`
 
 ## Configuration
 Modify `user_config.py`
